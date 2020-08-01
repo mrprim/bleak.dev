@@ -161,7 +161,7 @@ $delay: 0s;
     transform: translateX(-50%) translateY(-40px) scale(1, 1);
   }
   100% {
-    transform: translateX(-50%) translateY($horizon) scale(1, 1);
+    transform: translateX(-50%) translateY($horizon - 4px) scale(1, 1);
   }
 }
 
@@ -461,5 +461,39 @@ $delay: 0s;
   }
   100% {
     transform: scale(1, 1) translateX($canvasWidth) translateY($frameHeight);
+  }
+}
+
+.reset-button {
+  svg {
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+    width: 40px;
+    height: 40px;
+    color: #333;
+    cursor: pointer;
+    animation: fade-in 1s ease-in forwards;
+    transition: transform 0.25s;
+    fill: currentColor;
+
+    &:hover {
+      transform: scale(1.1);
+      color: #777;
+    }
+
+    &:active {
+      transform: scale(0.95);
+      color: #555;
+    }
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
