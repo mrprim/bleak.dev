@@ -68,6 +68,18 @@ export default () => {
         <div className='ripple' />
         <div className='ripple-secondary' />
         <div className='spotlight' />
+        <div className='trunk-base'>
+          <svg
+            focusable='false'
+            viewBox='0 0 1 1'
+            aria-hidden='true'
+            role='presentation'
+          >
+            <path
+              d='M 0 1 L 1 1 L .5 0 z'
+            />
+          </svg>
+        </div>
         <div className='trunk' />
         <div className='leaves' />
         <div className='sun'>

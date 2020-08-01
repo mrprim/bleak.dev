@@ -304,12 +304,43 @@ $delay: 0s;
   }
 }
 
+.trunk-base {
+  display: block;
+  bottom: $frameHeight - $horizon;
+  left: 50%;
+  height: 20px;
+  width: 20px;
+  z-index: 5;
+  transform-origin: center bottom;
+  transform: translateX(-50%);
+
+  svg {
+    transform: scaleX(0);
+    color: $trunk-color;
+    fill: currentColor;
+  }
+}
+
+.animate .trunk-base svg {
+  animation: trunk-base-grow-phase ease-out $trunk-grow-phase-duration/8 $trunk-grow-phase-start +
+    $trunk-grow-phase-duration/6 forwards;
+}
+
+@keyframes trunk-base-grow-phase {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
 .trunk {
   display: block;
   bottom: $frameHeight - $horizon;
   left: 50%;
   height: $trunk-height;
-  width: 10px;
+  width: 12px;
   border-radius: 10px 10px 0 0;
   transform-origin: bottom center;
   background: linear-gradient(20deg, $trunk-color 50%, rgba(0, 0, 0, 0) 50%);
