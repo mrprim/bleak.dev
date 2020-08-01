@@ -1,0 +1,465 @@
+$horizon: 400px;
+$canvasWidth: 600px;
+$frameHeight: 500px;
+$frameWidth: 300px;
+$trunk-height: 125px;
+
+// PALETTE
+$water-color: #0442bf;
+$star-color: #eee;
+$sun-color: #fff;
+$sky-color: linear-gradient(110deg, #f27e63, #0476d9);
+$trunk-color: #fffced;
+$leaf-color: linear-gradient(160deg, #f27e63, #d95284 15%, #d95284 60%);
+$canvas-color: darken(rgb(29, 30, 34), 10);
+
+// ANIMATION TIMING
+$intro-phase-start: 0s;
+$intro-phase-duration: 0.5s;
+
+$drop-phase-start: $intro-phase-start + $intro-phase-duration;
+$drop-phase-duration: 2s;
+
+$star-lower-phase-start: $drop-phase-start + $drop-phase-duration;
+$star-lower-phase-duration: 0.5s;
+
+$rebound-phase-start: $drop-phase-start + $drop-phase-duration;
+$rebound-phase-duration: 1.5s;
+
+$splash-phase-start: $drop-phase-start + $drop-phase-duration;
+$splash-phase-duration: 0.25s;
+
+$ripple-phase-start: $drop-phase-start + $drop-phase-duration;
+$ripple-phase-duration: 2s;
+
+$ripple-2-phase-start: $drop-phase-start + $drop-phase-duration + $rebound-phase-duration;
+$ripple-2-phase-duration: 4s;
+
+$splash-phase-2-start: $splash-phase-start + $rebound-phase-duration;
+$splash-phase-2-duration: 0.25s;
+
+$trunk-grow-phase-start: $splash-phase-start + $rebound-phase-duration + 0.75;
+$trunk-grow-phase-duration: 4s;
+
+$leaf-grow-phase-start: $trunk-grow-phase-start + $trunk-grow-phase-duration - 2;
+$leaf-grow-phase-duration: 4s;
+
+$sun-phase-start: $leaf-grow-phase-start + $leaf-grow-phase-duration - 1;
+$sun-phase-duration: 2s;
+$sun-rotate-duration: 5s;
+
+$shooting-time: 2s;
+$delay: 0s;
+
+.canvas {
+  display: block;
+  position: relative;
+  max-width: $canvasWidth;
+  height: $frameHeight;
+  overflow: hidden;
+  margin: 20px auto;
+
+  > div {
+    position: absolute;
+  }
+}
+
+.frame {
+  top: 0;
+  left: 50%;
+  display: block;
+  position: absolute;
+  margin: 0 auto;
+  box-shadow: inset 0 0 0 4px #333;
+  background: $canvas-color;
+  width: $frameWidth;
+  height: $frameHeight;
+  transform: translateX(-50%);
+}
+
+.star {
+  display: block;
+  top: 0px;
+  left: 50%;
+  width: 25px;
+  height: 25px;
+  z-index: 3;
+  border-radius: 100%;
+  box-shadow: 0 0 40px 30px rgba(242, 126, 99, 0.2), inset 0 0 25px 25px rgba(242, 126, 99, 0.2);
+  transform: translateX(-50%) translateY(-40px);
+  svg {
+    color: $star-color;
+    fill: currentColor;
+  }
+}
+
+.animate .star {
+  animation: phase-drop-star ease-in $drop-phase-duration $drop-phase-start forwards,
+    phase-post-drop-star ease-out $star-lower-phase-duration $star-lower-phase-start forwards;
+  svg {
+    animation: star-spin 1s linear infinite,
+      phase-post-drop-star-svg ease-out $star-lower-phase-duration + 2 $star-lower-phase-start + 2 forwards;
+  }
+}
+
+@keyframes phase-drop-star {
+  0% {
+    transform: translateX(-50%) translateY(-40px);
+  }
+  100% {
+    transform: translateX(-50%) translateY($horizon);
+  }
+}
+
+@keyframes phase-post-drop-star {
+  0% {
+    transform: translateX(-50%) translateY($horizon);
+  }
+  100% {
+    transform: translateX(-50%) translateY($horizon + 40px);
+    background-color: $canvas-color;
+  }
+}
+
+@keyframes phase-post-drop-star-svg {
+  0% {
+    color: $star-color;
+  }
+  100% {
+    color: $canvas-color;
+  }
+}
+
+@keyframes star-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.drop {
+  display: block;
+  top: 0;
+  left: 50%;
+  height: 25px;
+  width: 25px;
+  border-radius: 100%;
+  background-color: $water-color;
+  transform: translateX(-50%) translateY(-40px);
+  z-index: 2;
+}
+
+.animate .drop {
+  animation: phase-drop ease-in $drop-phase-duration $drop-phase-start forwards,
+    phase-post-drop ease-in $splash-phase-duration $splash-phase-start forwards;
+}
+
+@keyframes phase-drop {
+  0% {
+    transform: translateX(-50%) translateY(-40px) scale(1, 1);
+  }
+  100% {
+    transform: translateX(-50%) translateY($horizon) scale(1, 1);
+  }
+}
+
+@keyframes phase-post-drop {
+  0% {
+    transform: translateX(-50%) translateY($horizon - 4px) scale(1, 1);
+  }
+  100% {
+    background-color: rgba(0, 0, 0, 0);
+    transform: translateX(-50%) translateY($horizon - 4px) scale(5, 0.1);
+  }
+}
+
+.drop-secondary {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: 6px;
+  width: 6px;
+  border-radius: 100%;
+  z-index: 2;
+  transform: translateX(-50%);
+}
+
+.animate .drop-secondary {
+  animation: drop-secondary cubic-bezier(0, 0.3, 1, 0.7) $rebound-phase-duration $rebound-phase-start forwards;
+}
+
+@keyframes drop-secondary {
+  0% {
+    transform: translateY($horizon) translateX(-50%);
+  }
+  0%,
+  5% {
+    background-color: rgba(0, 0, 0, 0);
+  }
+  50% {
+    transform: translateY($horizon - 50px) translateX(-50%);
+    background-color: $water-color;
+  }
+  95%,
+  100% {
+    background-color: rgba(0, 0, 0, 0);
+  }
+  100% {
+    transform: translateY($horizon - 4px) translateX(-50%);
+  }
+}
+
+.spotlight {
+  display: block;
+  top: -40px;
+  left: 50%;
+  width: 100px;
+  height: $horizon + 40;
+  background: linear-gradient(135deg, #c6ffdd, #fbd786, #f7797d);
+  opacity: 0.07;
+  transform-origin: top center;
+  transform: translateX(-50%) scale(0, 0);
+}
+
+.animate .spotlight {
+  animation: spotlight ease-in $drop-phase-duration $drop-phase-start forwards,
+    spotlight-stretch ease-in $leaf-grow-phase-duration $leaf-grow-phase-start + 1.75 forwards;
+}
+
+@keyframes spotlight {
+  0% {
+    transform: scale(1, 0) translateX(-50%);
+  }
+  100% {
+    transform: scale(1, 1) translateX(-50%);
+  }
+}
+
+@keyframes spotlight-stretch {
+  0% {
+    transform: scale(1, 1) translateX(-50%);
+    opacity: 0.07;
+  }
+  20% {
+    opacity: 0.01;
+  }
+  100% {
+    transform: scale(10, 1) translateX(-50%);
+    opacity: 0;
+  }
+}
+
+.ripple {
+  display: block;
+  position: absolute;
+  top: $horizon;
+  width: 100%;
+  height: 6px;
+  border-radius: 0 0 100% 100%;
+  transform-origin: top center;
+}
+
+.animate .ripple {
+  animation: ripple-phase ease-out $ripple-phase-duration $ripple-phase-start forwards;
+}
+
+@keyframes ripple-phase {
+  0% {
+    transform: scale(0.3, 0.1);
+    background: rgba(256, 256, 256, 0.2);
+  }
+  100% {
+    transform: scale(1.25, 1);
+    background: rgba(256, 256, 256, 0.1);
+  }
+}
+
+.ripple-secondary {
+  display: block;
+  position: absolute;
+  top: $horizon;
+  width: 100%;
+  height: 20px;
+  border-radius: 0 0 100% 100%;
+  transform-origin: top center;
+}
+
+.animate .ripple-secondary {
+  animation: ripple-2-phase ease-out $ripple-2-phase-duration $ripple-2-phase-start forwards;
+}
+
+@keyframes ripple-2-phase {
+  0% {
+    transform: scale(0.1, 0.1);
+  }
+  2% {
+    background: rgba(256, 256, 256, 0.2);
+  }
+  100% {
+    transform: scale(0.75, 1);
+    background: rgba(0, 0, 0, 0);
+  }
+}
+
+.trunk {
+  display: block;
+  bottom: $frameHeight - $horizon;
+  left: 50%;
+  height: $trunk-height;
+  width: 10px;
+  border-radius: 10px 10px 0 0;
+  transform-origin: bottom center;
+  background: linear-gradient(20deg, $trunk-color 50%, rgba(0, 0, 0, 0) 50%);
+  background-size: 300% 300%;
+  transform: translateX(-50%);
+  z-index: 5;
+}
+
+.animate .trunk {
+  animation: trunk-grow-phase ease-out $trunk-grow-phase-duration $trunk-grow-phase-start forwards;
+}
+
+@keyframes trunk-grow-phase {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 0% 100%;
+  }
+}
+
+.leaves {
+  display: block;
+  bottom: $frameHeight - $horizon + 100px;
+  left: 50%;
+  height: $trunk-height;
+  width: $trunk-height;
+  border-radius: 100%;
+  background: $leaf-color;
+  background-size: 300% 300%;
+  transform-origin: 50% 90%;
+  transform: translateX(-50%) scale(0, 0);
+  z-index: 4;
+}
+
+.animate .leaves {
+  animation: leaf-grow-phase ease-out $leaf-grow-phase-duration $leaf-grow-phase-start forwards;
+}
+
+@keyframes leaf-grow-phase {
+  0% {
+    transform: translateX(-50%) scale(0, 0);
+  }
+  100% {
+    transform: translateX(-50%) scale(1, 1);
+  }
+}
+
+.sky {
+  display: block;
+  top: 0;
+  left: 50%;
+  height: $horizon;
+  width: $frameWidth;
+  z-index: 1;
+  background: $sky-color;
+  opacity: 0;
+  transform: translateX(-50%);
+}
+
+.animate .sky {
+  animation: sky-phase 4s ease-in $leaf-grow-phase-start forwards;
+}
+
+@keyframes sky-phase {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+.sun {
+  display: block;
+  top: 55px;
+  left: 50%;
+  height: 50px;
+  width: 50px;
+  transform: translateX(-50%) scale(0, 0);
+  z-index: 1;
+  border-radius: 100%;
+  box-shadow: 0 0 40px 20px rgba(242, 126, 99, 0.4), inset 0 0 25px 25px rgba(242, 126, 99, 0.3);
+  svg {
+    color: $sun-color;
+    fill: currentColor;
+  }
+}
+
+.animate .sun {
+  animation: phase-sun ease-in $sun-phase-duration $sun-phase-start forwards;
+  svg {
+    animation: sun-idle $sun-rotate-duration linear infinite;
+  }
+}
+
+@keyframes phase-sun {
+  0% {
+    transform: translateX(-50%) scale(0, 0);
+  }
+  100% {
+    transform: translateX(-50%) scale(1, 1);
+  }
+}
+
+@keyframes sun-idle {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.the-not {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+.not-star {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 4px;
+  width: 4px;
+  background: #aaa; // linear-gradient(-45deg, rgba(95, 145, 255, 1), rgba(0, 0, 255, 0));
+  border-radius: 999px;
+  animation: shooting $shooting-time linear infinite both;
+
+  @for $i from 1 through 20 {
+    &:nth-child(#{$i}) {
+      $delay: random(9999) + 0ms;
+      top: calc(#{random($frameHeight) - 400px});
+      left: calc(#{random($canvasWidth) - 0px});
+      animation-delay: $delay;
+      opacity: random(50) / 100 + 0.5;
+    }
+  }
+}
+
+@keyframes shooting {
+  0% {
+    transform: scale(0, 0) translateX(0) translateY(0);
+  }
+
+  50% {
+    transform: scale(1, 1) translateX($canvasWidth / 2) translateY($frameHeight / 2);
+  }
+  100% {
+    transform: scale(1, 1) translateX($canvasWidth) translateY($frameHeight);
+  }
+}
